@@ -1,10 +1,9 @@
-name: Main
+name: Release
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    tags:
+      - "*"
 
 env:
   CARGO_TERM_COLOR: always
@@ -20,12 +19,11 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-          components: rustfmt, clippy
       - name: Release build
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --all-features
+          args: --release --locked --all-features
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')

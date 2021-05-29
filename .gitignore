@@ -53,7 +53,7 @@ Temporary Items
 
 # Remove Cargo.lock from gitignore if creating an executable, leave it for libraries
 # More information here https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
-Cargo.lock
+# Cargo.lock
 
 ### VisualStudioCode ###
 .vscode/*
@@ -96,3 +96,4 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/rust,linux,windows,macos,visualstudiocode
 
+aur/
