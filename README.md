@@ -6,7 +6,13 @@ _Note: Currently only tested on swaywm. Though it should work on any Wayland com
 
 ## Installation
 
-Currently only available on AUR. Feel free to make an issue if you would like to see it elsewhere and have some time available to help.
+If you would like waycorner to be available on your distro's package manager, feel free to make an issue if you have some time to help.
+
+### Arch User Repository (AUR)
+
+```zsh
+yay -S waycorner
+```
 
 ### Manually
 
