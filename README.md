@@ -4,6 +4,8 @@ Hot corners for Wayland. Waycorner allows you to create anchors on specified loc
 
 _Note: Currently only tested on swaywm. Though it should work on any Wayland compositor that supports the xdg-output protocol._
 
+https://user-images.githubusercontent.com/1593486/120075347-cd7cc400-c098-11eb-9a76-7fb26ee9cab9.mp4
+
 ## Installation
 
 If you would like waycorner to be available on your distro's package manager, feel free to make an issue if you have some time to help.
