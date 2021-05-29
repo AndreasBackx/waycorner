@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2021-05-29
+### Changed
+- Use the top layer instead of the overlay layer. This makes it not lay on top of lock screens like swaylock.
+- When coming out of the lock screen, it will ignore the first events if they are too fast as they would indicate the move was not moved while in the lock screen. This would otherwise lead to invalidly running the command again.
+
 ## [0.1.2] - 2021-05-29
 ### Added
 - Automatic AUR deployments.

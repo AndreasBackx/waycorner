@@ -243,7 +243,7 @@ impl Wayland {
                 let layer_surface = layer_shell.get_layer_surface(
                     &surface,
                     Some(&output),
-                    zwlr_layer_shell_v1::Layer::Overlay,
+                    zwlr_layer_shell_v1::Layer::Top,
                     "waycorner".to_owned(),
                 );
                 let size = corner_config.size.into();
