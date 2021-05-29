@@ -3,7 +3,7 @@
 pkgname=waycorner
 pkgver={{PKG_VERSION}}
 pkgrel=2
-pkgdesc="Hot corners for Wayland. Create anchors on specified locations of your monitors and execute a command of your choice."
+pkgdesc="Hot corners for Wayland. Create anchors in the corners of your monitors and execute a command of your choice."
 arch=('any')
 url="https://github.com/AndreasBackx/waycorner"
 license=('MIT')

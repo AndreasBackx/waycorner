@@ -1,6 +1,6 @@
 # waycorner
 
-Hot corners for Wayland. Waycorner allows you to create anchors on specified locations of your monitors and execute a command of your choice.
+Hot corners for Wayland. Create anchors in the corners of your monitors and execute a command of your choice.
 
 _Note: Currently only tested on swaywm. Though it should work on any Wayland compositor that supports the xdg-output protocol._
 
