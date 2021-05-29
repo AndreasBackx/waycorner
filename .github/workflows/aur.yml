@@ -60,4 +60,4 @@ jobs:
           ${{ steps.changelog_reader.outputs.changes }}
 
           https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
-          # git push
+          git push
