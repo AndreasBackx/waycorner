@@ -48,15 +48,4 @@ jobs:
           git diff-index @ --exit-code --quiet || git commit -m "${TAG} version bump.
 
           https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
-          git --no-pager log
-          echo ----------------------------
-          echo PKGBUILD
-          echo ----------------------------
-          cat PKGBUILD
-          echo
-          echo ----------------------------
-          echo .SRCINFO
-          echo ----------------------------
-          cat .SRCINFO
-          echo
           git push
