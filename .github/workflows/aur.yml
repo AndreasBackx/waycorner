@@ -1,0 +1,62 @@
+name: Arch User Repository (AUR)
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  aur:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: SHA256 Archive
+        id: checksum
+        run: |
+          export TAG=${GITHUB_REF#refs/tags/}
+          export CHECKSUM=$(curl -Ls https://codeload.github.com/AndreasBackx/waycorner/tar.gz/${TAG} | sha256sum | awk '{print $1}')
+          echo "::set-output name=checksum::${CHECKSUM}"
+
+      - name: AUR Version Bump
+        run: |
+          export TAG=${GITHUB_REF#refs/tags/}
+          export CHECKSUM=${{ steps.checksum.outputs.checksum }}
+          echo "Bumping version to ${TAG}"
+          echo "Checksum: ${CHECKSUM}"
+          sudo rm -r */src || true
+          sudo git clean -dfx
+          git clone ssh://aur@aur.archlinux.org/waycorner.git ../aur
+          rm ../aur/* || truegit
+          cp templates/PKGBUILD ../aur/PKGBUILD
+          cp templates/.SRCINFO ../aur/.SRCINFO
+          cd ../aur
+          sed -i "s@{{PKG_VERSION}}@${TAG}@g" PKGBUILD
+          sed -i "s@{{CHECKSUM}}@${CHECKSUM}@g" PKGBUILD
+          sed -i "s@{{PKG_VERSION}}@${TAG}@g" .SRCINFO
+          sed -i "s@{{CHECKSUM}}@${CHECKSUM}@g" .SRCINFO
+          git config user.name "${{ github.event.head_commit.author.name }}"
+          git config user.email "${{ github.event.head_commit.author.email }}"
+          git add -A
+          git diff-index @ --exit-code --quiet || git commit -m "${TAG} version bump.
+
+          https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+          git --no-pager log
+          echo ----------------------------
+          echo PKGBUILD
+          echo ----------------------------
+          cat PKGBUILD
+          echo
+          echo ----------------------------
+          echo .SRCINFO
+          echo ----------------------------
+          cat .SRCINFO
+          echo
+          git push

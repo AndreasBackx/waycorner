@@ -9,21 +9,24 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install minimal stable with clippy and rustfmt
+
+      - name: Install minimal stable
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
-      - name: Release build
+
+      - name: Build release
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release --locked --all-features
+
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
