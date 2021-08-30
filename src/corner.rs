@@ -1,5 +1,6 @@
 use std::{
     borrow::Borrow,
+    cmp,
     process::Command,
     sync::{
         mpsc::{channel, Receiver, Sender},
@@ -38,6 +39,8 @@ impl Corner {
     }
 
     pub fn wait(&self) -> Result<()> {
+        let timeout =
+            Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
         let mut last_event = None;
         let mut command_done_at = None;
         loop {
@@ -46,7 +49,7 @@ impl Corner {
                 .1
                 .lock()
                 .expect("cannot get corner receiver")
-                .recv_timeout(Duration::from_millis(self.config.timeout_ms.into()));
+                .recv_timeout(timeout);
             match event_result {
                 Ok(event) => {
                     debug!("Received event: {:?}", event);
@@ -57,11 +60,15 @@ impl Corner {
                     }) {
                         last_event = Some(event);
                     } else {
-                        debug!("Ignored the event due to too fast after unlock.");
+                        debug!(
+                            "Ignored the event due to too fast after unlock."
+                        );
                     }
                 }
                 Err(_error) => {
-                    if last_event.map_or(false, |value| value == CornerEvent::Enter) {
+                    if last_event
+                        .map_or(false, |value| value == CornerEvent::Enter)
+                    {
                         self.execute_command()?;
                         command_done_at = Some(Instant::now());
                     }

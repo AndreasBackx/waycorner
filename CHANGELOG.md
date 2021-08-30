@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2021-08-30
+### Changed
+- Added a minimum timeout of 5ms to prevent an infinite loop as it would continuously check for updates.
+
 ## [0.1.3] - 2021-05-29
 ### Changed
 - Use the top layer instead of the overlay layer. This makes it not lay on top of lock screens like swaylock.
