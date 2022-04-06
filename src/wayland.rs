@@ -235,6 +235,10 @@ impl Wayland {
                 Location::TopRight => Anchor::Top | Anchor::Right,
                 Location::BottomRight => Anchor::Bottom | Anchor::Right,
                 Location::BottomLeft => Anchor::Bottom | Anchor::Left,
+                Location::Left => Anchor::Left,
+                Location::Right => Anchor::Right,
+                Location::Top => Anchor::Top,
+                Location::Bottom => Anchor::Bottom,
             })
             .map(|anchor| {
                 info!("Adding anchorpoint {:?}", anchor);
@@ -246,8 +250,22 @@ impl Wayland {
                     zwlr_layer_shell_v1::Layer::Top,
                     "waycorner".to_owned(),
                 );
-                let size = corner_config.size.into();
-                layer_surface.set_size(size, size);
+                
+                let size_width = 
+                	if corner_config.size_width != 10 {
+                		corner_config.size_width.into()
+                	} else {
+                		corner_config.size.into()
+                	};
+                
+                let size_height =
+                	if corner_config.size_height != 10 {
+                		corner_config.size_height.into()
+                	} else {
+                		corner_config.size.into()
+                	};
+                
+                layer_surface.set_size(size_width, size_height);
                 layer_surface.set_anchor(anchor);
                 // Ignore exclusive zones.
                 layer_surface.set_exclusive_zone(-1);
@@ -297,7 +315,7 @@ impl Wayland {
                         0,
                         width.try_into().unwrap(),
                         height.try_into().unwrap(),
-                        (4 * height).try_into().unwrap(),
+                        (4 * width).try_into().unwrap(),
                         Format::Argb8888,
                     );
                     surface_handle.attach(Some(&buffer), 0, 0);

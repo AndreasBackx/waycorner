@@ -37,8 +37,16 @@ command = "lock"  # required
 # Options: top_left, top_right, bottom_right, and bottom_left.
 locations = ["bottom_right", "bottom_left"]  # default
 
-# Size of the hot corners in pixels.
+# Alternatively, you can specify an edge.
+# Options: left, right, top, bottom
+# locations = ["top", "bottom"]
+
+# Size of the hot corners in pixels. Size can be either one "size" value,
+# or separate "size_height" and "size_width" values. Use one or the other.
 size = 10  # default
+# size_height = 10
+# size_width = 10
+
 
 # Timeout in milliseconds before command is triggered.
 timeout_ms = 250  # default
