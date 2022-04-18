@@ -1,8 +1,13 @@
 [package]
+authors = ["Andreas Backx"]
+categories = ["command-line-utilities"]
+description = "Hot corners for Wayland. Create anchors in the corners of your monitors and execute a command of your choice."
+edition = "2018"
+homepage = "https://github.com/AndreasBackx/waycorner"
+keywords = ["wayland", "hot-corners", "swaywm", "wlroots"]
+license = "MIT"
 name = "waycorner"
 version = "0.1.4"
-authors = ["Andreas Backx"]
-edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
@@ -11,7 +16,7 @@ crossbeam-utils = "0.8.4"
 env_logger = "0.8.3"
 log = "0.4.0"
 regex = "1.5"
-serde = { version = "1.0.125", features = ["derive"] }
+serde = {version = "1.0.125", features = ["derive"]}
 smithay-client-toolkit = "0.13.0"
 tempfile = "3.2.0"
 toml = "0.5.8"
