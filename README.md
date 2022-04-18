@@ -16,6 +16,12 @@ If you would like waycorner to be available on your distro's package manager, fe
 yay -S waycorner
 ```
 
+### Cargo (crates.io)
+
+```zsh
+cargo install waycorner --locked
+```
+
 ### Manually
 
 ```zsh
