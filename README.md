@@ -13,7 +13,7 @@ If you would like waycorner to be available on your distro's package manager, fe
 ### Arch User Repository (AUR)
 
 ```zsh
-yay -S waycorner
+paru -S waycorner
 ```
 
 ### Cargo (crates.io)
@@ -27,7 +27,7 @@ cargo install waycorner --locked
 ```zsh
 git clone git@github.com:AndreasBackx/waycorner.git
 cd waycorner
-cargo install --path .
+cargo install --path . --locked
 ```
 
 ## Configuration
