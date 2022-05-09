@@ -7,7 +7,7 @@ fn default_locations() -> Vec<Location> {
     vec![Location::BottomRight, Location::BottomLeft]
 }
 
-fn default_size() -> u8 {
+fn default_size() -> u16 {
     10
 }
 
@@ -22,7 +22,11 @@ pub struct CornerConfig {
     #[serde(default = "default_locations")]
     pub locations: Vec<Location>,
     #[serde(default = "default_size")]
-    pub size: u8,
+    pub size: u16,
+    #[serde(default = "default_size")]
+    pub size_width: u16,
+    #[serde(default = "default_size")]
+    pub size_height: u16,
     #[serde(default = "default_timeout_ms")]
     pub timeout_ms: u16,
 }
@@ -39,6 +43,10 @@ pub enum Location {
     TopRight,
     BottomRight,
     BottomLeft,
+    Left,
+    Right,
+    Top,
+    Bottom,
 }
 
 type Config = HashMap<String, CornerConfig>;
