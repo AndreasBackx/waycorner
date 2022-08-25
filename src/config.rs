@@ -15,10 +15,17 @@ fn default_timeout_ms() -> u16 {
     250
 }
 
+fn default_command() -> Vec<String> {
+    Vec::new()
+}
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct CornerConfig {
     pub output: Option<OutputConfig>,
-    pub command: Vec<String>,
+    #[serde(default = "default_command")]
+    pub enter_command: Vec<String>,
+    #[serde(default = "default_command")]
+    pub exit_command: Vec<String>,
     #[serde(default = "default_locations")]
     pub locations: Vec<Location>,
     #[serde(default = "default_size")]

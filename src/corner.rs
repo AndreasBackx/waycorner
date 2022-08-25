@@ -39,8 +39,7 @@ impl Corner {
     }
 
     pub fn wait(&self) -> Result<()> {
-        let timeout =
-            Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
+        let timeout = Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
         let mut last_event = None;
         let mut command_done_at = None;
         loop {
@@ -60,16 +59,20 @@ impl Corner {
                     }) {
                         last_event = Some(event);
                     } else {
-                        debug!(
-                            "Ignored the event due to too fast after unlock."
-                        );
+                        debug!("Ignored the event due to too fast after unlock.");
                     }
                 }
                 Err(_error) => {
-                    if last_event
-                        .map_or(false, |value| value == CornerEvent::Enter)
-                    {
-                        self.execute_command()?;
+                    if last_event.map_or(Ok(false), |value| -> Result<bool> {
+                        if value == CornerEvent::Enter {
+                            self.execute_enter_command()?;
+                        } else if value == CornerEvent::Leave {
+                            self.execute_exit_command()?;
+                        } else {
+                            return Ok(false);
+                        }
+                        return Ok(true);
+                    })? {
                         command_done_at = Some(Instant::now());
                     }
                     last_event = None;
@@ -107,11 +110,29 @@ impl Corner {
             .unwrap_or(true)
     }
 
-    fn execute_command(&self) -> Result<()> {
-        if let Some(binary) = self.config.command.first() {
+    fn execute_enter_command(&self) -> Result<()> {
+        if let Some(binary) = self.config.enter_command.first() {
             let args = self
                 .config
-                .command
+                .enter_command
+                .iter()
+                .enumerate()
+                .filter(|(index, _)| index > 0.borrow())
+                .map(|(_, value)| value)
+                .collect::<Vec<_>>();
+            info!("executing command: {} {:?}", binary, args);
+            let output = Command::new(binary).args(args).output()?;
+            info!("output received: {:?}", output);
+        }
+
+        Ok(())
+    }
+
+    fn execute_exit_command(&self) -> Result<()> {
+        if let Some(binary) = self.config.exit_command.first() {
+            let args = self
+                .config
+                .exit_command
                 .iter()
                 .enumerate()
                 .filter(|(index, _)| index > 0.borrow())
