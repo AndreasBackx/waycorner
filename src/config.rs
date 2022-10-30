@@ -72,13 +72,12 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
     toml::from_str::<Config>(config_content.as_str()).map(|item| {
         item.into_iter()
             .map(|(key, value)| {
-                if key.ends_with(".output") || value.enter_command.len() != 0 || value.exit_command.len() != 0 {
-                    Ok(value)
-                } else {
-                    Err(Error::msg(format!(
-                        "You must provide either an `exit_command` or an `enter_command` for key `{}`",
-                        key
-                    )))
+                if value.enter_command.is_empty() && value.exit_command.is_empty() {
+                    bail!(
+                        "You must provide either an `exit_command` or an `enter_command` for `{key}`",
+                    )
+                }
+                Ok(value)
                 }
             })
             .collect::<Result<Vec<_>>>()
