@@ -63,16 +63,12 @@ impl Corner {
                     }
                 }
                 Err(_error) => {
-                    if last_event.map_or(Ok(false), |value| -> Result<bool> {
-                        if value == CornerEvent::Enter {
+                    if let Some(event) = last_event {
+                        if event == CornerEvent::Enter {
                             self.execute_enter_command()?;
                         } else if value == CornerEvent::Leave {
                             self.execute_exit_command()?;
-                        } else {
-                            return Ok(false);
                         }
-                        return Ok(true);
-                    })? {
                         command_done_at = Some(Instant::now());
                     }
                     last_event = None;

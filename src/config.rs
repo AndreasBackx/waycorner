@@ -22,7 +22,7 @@ fn default_command() -> Vec<String> {
 #[derive(Clone, Debug, Deserialize)]
 pub struct CornerConfig {
     pub output: Option<OutputConfig>,
-    #[serde(default = "default_command")]
+    #[serde(default = "default_command", alias = "command"]
     pub enter_command: Vec<String>,
     #[serde(default = "default_command")]
     pub exit_command: Vec<String>,
