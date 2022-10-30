@@ -1,6 +1,6 @@
 use std::{collections::HashMap, env, fs::File, io::Read, path::PathBuf};
 
-use anyhow::{Context, Error, Result};
+use anyhow::{Context, Error, Result, bail};
 use serde::Deserialize;
 
 fn default_locations() -> Vec<Location> {
@@ -74,11 +74,11 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
             .map(|(key, value)| {
                 if value.enter_command.is_empty() && value.exit_command.is_empty() {
                     bail!(
-                        "You must provide either an `exit_command` or an `enter_command` for `{key}`",
+                        "You must provide either an `exit_command` or an `enter_command` for `{}`",
+                        key
                     )
                 }
                 Ok(value)
-                }
             })
             .collect::<Result<Vec<_>>>()
             .map_err(|error| -> Error { error.into() })
