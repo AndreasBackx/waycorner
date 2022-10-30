@@ -65,9 +65,9 @@ impl Corner {
                 Err(_error) => {
                     if let Some(event) = last_event {
                         if event == CornerEvent::Enter {
-                            self.execute_enter_command()?;
+                            self.execute_command(&self.config.enter_command)?;
                         } else if event == CornerEvent::Leave {
-                            self.execute_exit_command()?;
+                            self.execute_command(&self.config.exit_command)?;
                         }
                         command_done_at = Some(Instant::now());
                     }
@@ -106,29 +106,9 @@ impl Corner {
             .unwrap_or(true)
     }
 
-    fn execute_enter_command(&self) -> Result<()> {
-        if let Some(binary) = self.config.enter_command.first() {
-            let args = self
-                .config
-                .enter_command
-                .iter()
-                .enumerate()
-                .filter(|(index, _)| index > 0.borrow())
-                .map(|(_, value)| value)
-                .collect::<Vec<_>>();
-            info!("executing command: {} {:?}", binary, args);
-            let output = Command::new(binary).args(args).output()?;
-            info!("output received: {:?}", output);
-        }
-
-        Ok(())
-    }
-
-    fn execute_exit_command(&self) -> Result<()> {
-        if let Some(binary) = self.config.exit_command.first() {
-            let args = self
-                .config
-                .exit_command
+    fn execute_command(&self, command: &Vec<String>) -> Result<()> {
+        if let Some(binary) = command.first() {
+            let args = command
                 .iter()
                 .enumerate()
                 .filter(|(index, _)| index > 0.borrow())
