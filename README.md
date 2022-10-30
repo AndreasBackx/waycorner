@@ -39,10 +39,11 @@ Default configuration location is `~/.config/waycorner/config.toml`, this needs 
 # Shell commands to execute when hotcorner is triggered,
 # at least one is required.
 
+# Command to run when cursor enters hotcorner.
+# `command` is an alias for `enter_command`.
 enter_command = [ "notify-send", "enter" ]
+# Command to run when cursor exits hotcorner.
 exit_command = [ "notify-send", "exit" ]
-# Omit enter_command or exit command to run nothing when
-# entering/exiting the corner
 
 # Locations of the hot corners.
 # Options: top_left, top_right, bottom_right, and bottom_left.
