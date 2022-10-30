@@ -22,7 +22,7 @@ fn default_command() -> Vec<String> {
 #[derive(Clone, Debug, Deserialize)]
 pub struct CornerConfig {
     pub output: Option<OutputConfig>,
-    #[serde(default = "default_command", alias = "command"]
+    #[serde(default = "default_command", alias = "command")]
     pub enter_command: Vec<String>,
     #[serde(default = "default_command")]
     pub exit_command: Vec<String>,
@@ -69,12 +69,20 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
         .with_context(|| format!("could not open the file {}", path.display()))?;
     let mut config_content = String::new();
     config_file.read_to_string(&mut config_content)?;
-    toml::from_str::<Config>(config_content.as_str())
-        .map_err(|error| -> Error { error.into() })
-        .with_context(|| format!("could not parse {}", path.display()))
-        .map(|item| {
-            item.into_iter()
-                .map(|(_key, value)| value)
-                .collect::<Vec<_>>()
-        })
+    toml::from_str::<Config>(config_content.as_str()).map(|item| {
+        item.into_iter()
+            .map(|(key, value)| {
+                if key.ends_with(".output") || value.enter_command.len() != 0 || value.exit_command.len() != 0 {
+                    Ok(value)
+                } else {
+                    Err(Error::msg(format!(
+                        "You must provide either an `exit_command` or an `enter_command` for key `{}`",
+                        key
+                    )))
+                }
+            })
+            .collect::<Result<Vec<_>>>()
+            .map_err(|error| -> Error { error.into() })
+            .with_context(|| format!("could not parse {}", path.display()))
+    })?
 }

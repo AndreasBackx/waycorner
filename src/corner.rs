@@ -66,7 +66,7 @@ impl Corner {
                     if let Some(event) = last_event {
                         if event == CornerEvent::Enter {
                             self.execute_enter_command()?;
-                        } else if value == CornerEvent::Leave {
+                        } else if event == CornerEvent::Leave {
                             self.execute_exit_command()?;
                         }
                         command_done_at = Some(Instant::now());
