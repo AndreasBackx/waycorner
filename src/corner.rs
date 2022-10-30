@@ -39,8 +39,7 @@ impl Corner {
     }
 
     pub fn wait(&self) -> Result<()> {
-        let timeout =
-            Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
+        let timeout = Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
         let mut last_event = None;
         let mut command_done_at = None;
         loop {
@@ -60,16 +59,16 @@ impl Corner {
                     }) {
                         last_event = Some(event);
                     } else {
-                        debug!(
-                            "Ignored the event due to too fast after unlock."
-                        );
+                        debug!("Ignored the event due to too fast after unlock.");
                     }
                 }
                 Err(_error) => {
-                    if last_event
-                        .map_or(false, |value| value == CornerEvent::Enter)
-                    {
-                        self.execute_command()?;
+                    if let Some(event) = last_event {
+                        if event == CornerEvent::Enter {
+                            self.execute_command(&self.config.enter_command)?;
+                        } else if event == CornerEvent::Leave {
+                            self.execute_command(&self.config.exit_command)?;
+                        }
                         command_done_at = Some(Instant::now());
                     }
                     last_event = None;
@@ -107,11 +106,9 @@ impl Corner {
             .unwrap_or(true)
     }
 
-    fn execute_command(&self) -> Result<()> {
-        if let Some(binary) = self.config.command.first() {
-            let args = self
-                .config
-                .command
+    fn execute_command(&self, command: &Vec<String>) -> Result<()> {
+        if let Some(binary) = command.first() {
+            let args = command
                 .iter()
                 .enumerate()
                 .filter(|(index, _)| index > 0.borrow())
