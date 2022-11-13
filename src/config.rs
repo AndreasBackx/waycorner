@@ -18,6 +18,10 @@ fn default_size() -> u8 {
     10
 }
 
+fn default_margin() -> i8 {
+    5
+}
+
 fn default_timeout_ms() -> u16 {
     250
 }
@@ -66,6 +70,8 @@ pub struct CornerConfig {
     pub locations: Vec<Location>,
     #[serde(default = "default_size")]
     pub size: u8,
+    #[serde(default = "default_margin")]
+    pub margin: i8,
     #[serde(default = "default_timeout_ms")]
     pub timeout_ms: u16,
     #[serde(default = "default_color", deserialize_with = "from_hex")]
@@ -84,6 +90,10 @@ pub enum Location {
     TopRight,
     BottomRight,
     BottomLeft,
+    Left,
+    Right,
+    Top,
+    Bottom,
 }
 
 type Config = HashMap<String, CornerConfig>;
