@@ -12,7 +12,7 @@ fn default_size() -> u8 {
 }
 
 fn default_margin() -> i8 {
-    5
+    20
 }
 
 fn default_timeout_ms() -> u16 {
