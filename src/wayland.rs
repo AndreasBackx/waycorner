@@ -230,13 +230,18 @@ impl Wayland {
         corner_config
             .locations
             .iter()
-            .map(|location| match location {
-                Location::TopLeft => Anchor::Top | Anchor::Left,
-                Location::TopRight => Anchor::Top | Anchor::Right,
-                Location::BottomRight => Anchor::Bottom | Anchor::Right,
-                Location::BottomLeft => Anchor::Bottom | Anchor::Left,
-            })
-            .map(|anchor| {
+            .map(|location| {
+                let anchor = match location {
+                    Location::TopLeft => Anchor::Top | Anchor::Left,
+                    Location::TopRight => Anchor::Top | Anchor::Right,
+                    Location::BottomRight => Anchor::Bottom | Anchor::Right,
+                    Location::BottomLeft => Anchor::Bottom | Anchor::Left,
+                    Location::Left => Anchor::Left | Anchor::Top | Anchor::Bottom,
+                    Location::Right => Anchor::Right | Anchor::Top | Anchor::Bottom,
+                    Location::Top => Anchor::Top | Anchor::Left | Anchor::Right,
+                    Location::Bottom => Anchor::Bottom | Anchor::Left | Anchor::Right,
+                };
+
                 info!("Adding anchorpoint {:?}", anchor);
                 let surface = environment.create_surface().detach();
 
@@ -247,7 +252,36 @@ impl Wayland {
                     "waycorner".to_owned(),
                 );
                 let size = corner_config.size.into();
-                layer_surface.set_size(size, size);
+                let margin = corner_config.margin.into();
+                layer_surface.set_size(
+                    match location {
+                        Location::Top | Location::Bottom => 0,
+                        _ => size,
+                    },
+                    match location {
+                        Location::Left | Location::Right => 0,
+                        _ => size,
+                    }
+                );
+                layer_surface.set_margin( // top, right, bottom, left
+                    match location {
+                        Location::Left | Location::Right => margin,
+                        _ => 0,
+                    },
+                    match location {
+                        Location::Top | Location::Bottom => margin,
+                        _ => 0,
+                    },
+                    match location {
+                        Location::Left | Location::Right => margin,
+                        _ => 0,
+                    },
+                    match location {
+                        Location::Top | Location::Bottom => margin,
+                        _ => 0,
+                    }
+
+                );
                 layer_surface.set_anchor(anchor);
                 // Ignore exclusive zones.
                 layer_surface.set_exclusive_zone(-1);
@@ -297,7 +331,7 @@ impl Wayland {
                         0,
                         width.try_into().unwrap(),
                         height.try_into().unwrap(),
-                        (4 * height).try_into().unwrap(),
+                        (4 * width).try_into().unwrap(),
                         Format::Argb8888,
                     );
                     surface_handle.attach(Some(&buffer), 0, 0);
