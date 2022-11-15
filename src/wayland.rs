@@ -52,11 +52,30 @@ pub struct Wayland {
     corner_to_surfaces: Vec<(Corner, Vec<WlSurface>)>,
 }
 
-const RED: u32 = 0xD0_FF_00_00;
-const TRANSPARENT: u32 = 0x00_00_00_00;
+#[non_exhaustive]
+struct Color;
+
+impl Color {
+    pub const TRANSPARENT: u32 = 0x00_00_00_00;
+    pub const RED: u32 = 0xD0_FF_00_00;
+    pub const GREEN: u32 = 0xD0_00_FF_00;
+    pub const BLUE: u32 = 0xD0_00_00_FF;
+
+    pub fn get(preview_color: &str) -> u32 {
+        match preview_color {
+            "red" => Color::RED,
+            "green" => Color::GREEN,
+            "blue" => Color::BLUE,
+            _ => Color::RED,
+        }
+    }
+}
 
 impl Wayland {
-    pub fn new(configs: Vec<CornerConfig>, preview: bool) -> Self {
+    pub fn new(
+        configs: Vec<CornerConfig>,
+        preview: bool,
+    ) -> Self {
         Wayland {
             preview,
             corner_to_surfaces: configs
@@ -184,6 +203,7 @@ impl Wayland {
     ) -> Result<()> {
         info!("{:?}", info);
         let preview = self.preview;
+
         self.corner_to_surfaces
             .iter_mut()
             .map(|(corner, surfaces)| -> Result<()> {
@@ -207,6 +227,7 @@ impl Wayland {
                     &output,
                     corner.config.clone(),
                     preview,
+                    Color::get(corner.config.color.as_str()),
                 )?;
 
                 surfaces.append(&mut corner_surfaces);
@@ -226,6 +247,7 @@ impl Wayland {
         output: &WlOutput,
         corner_config: CornerConfig,
         preview: bool,
+        preview_color: u32,
     ) -> Result<Vec<WlSurface>> {
         corner_config
             .locations
@@ -286,7 +308,13 @@ impl Wayland {
                 // Ignore exclusive zones.
                 layer_surface.set_exclusive_zone(-1);
 
-                Wayland::initial_draw(environment, surface.clone(), layer_surface, preview)?;
+                Wayland::initial_draw(
+                    environment,
+                    surface.clone(),
+                    layer_surface,
+                    preview,
+                    preview_color,
+                )?;
 
                 Ok(surface)
             })
@@ -298,6 +326,7 @@ impl Wayland {
         surface: WlSurface,
         layer_surface: Main<ZwlrLayerSurfaceV1>,
         preview: bool,
+        preview_color: u32,
     ) -> Result<()> {
         let mut double_pool = environment
             .create_double_pool(|_| {})
@@ -320,7 +349,11 @@ impl Wayland {
                     pool.seek(SeekFrom::Start(0)).unwrap();
                     {
                         let mut writer = BufWriter::new(&mut *pool);
-                        let color = if preview { RED } else { TRANSPARENT };
+                        let color = if preview {
+                            preview_color
+                        } else {
+                            Color::TRANSPARENT
+                        };
                         for _ in 0..pxcount {
                             writer.write_all(&color.to_ne_bytes()).unwrap();
                         }

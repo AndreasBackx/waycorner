@@ -19,6 +19,10 @@ fn default_timeout_ms() -> u16 {
     250
 }
 
+fn default_color() -> String {
+    "red".to_string()
+}
+
 fn default_command() -> Vec<String> {
     Vec::new()
 }
@@ -38,6 +42,8 @@ pub struct CornerConfig {
     pub margin: i8,
     #[serde(default = "default_timeout_ms")]
     pub timeout_ms: u16,
+    #[serde(default = "default_color")]
+    pub color: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
