@@ -55,6 +55,10 @@ size = 10  # default
 # Timeout in milliseconds before command is triggered.
 timeout_ms = 250  # default
 
+# Color of the corner when previewed
+# (useful for debuging purposes when setting up several hot corners)
+color = red  # default
+
 # Optional output config to specify what output to use.
 [left.output]
 # Regex to match output descriptions on.
