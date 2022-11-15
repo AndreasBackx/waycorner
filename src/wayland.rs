@@ -23,6 +23,8 @@ use std::{
     },
 };
 
+use regex::Regex;
+
 use wayland_client::{
     protocol::{wl_output::WlOutput, wl_pointer, wl_surface::WlSurface},
     Attached, Display, Main, Proxy,
@@ -66,8 +68,18 @@ impl Color {
             "red" => Color::RED,
             "green" => Color::GREEN,
             "blue" => Color::BLUE,
-            _ => Color::RED,
+            _ => Color::from_hexcode(preview_color),
         }
+    }
+
+    pub fn from_hexcode(hexcode: &str) -> u32 {
+        let re: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
+
+        if ! re.is_match(hexcode) {
+            panic!("Hexcode is not valid.");
+        }
+        let without_prefix = hexcode.trim_start_matches("#");
+        0xD0_00_00_00 + u32::from_str_radix(without_prefix, 16).unwrap()
     }
 }
 
