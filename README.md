@@ -64,6 +64,9 @@ timeout_ms = 250  # default
 # (useful for debuging purposes when setting up several hot corners)
 color = red  # default
 
+# Priority when drawing the corner (higher priority on top)
+priority = 0  # default                                                              
+
 # Optional output config to specify what output to use.
 [left.output]
 # Regex to match output descriptions on.

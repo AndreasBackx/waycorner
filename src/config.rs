@@ -23,6 +23,10 @@ fn default_color() -> String {
     "red".to_string()
 }
 
+fn default_priority() -> i8 {
+    0
+}
+
 fn default_command() -> Vec<String> {
     Vec::new()
 }
@@ -44,6 +48,8 @@ pub struct CornerConfig {
     pub timeout_ms: u16,
     #[serde(default = "default_color")]
     pub color: String,
+    #[serde(default = "default_priority")]
+    pub priority: i8,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -85,7 +91,7 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
         .with_context(|| format!("could not open the file {}", path.display()))?;
     let mut config_content = String::new();
     config_file.read_to_string(&mut config_content)?;
-    toml::from_str::<Config>(config_content.as_str()).map(|item| {
+    let items = toml::from_str::<Config>(config_content.as_str()).map(|item| {
         item.into_iter()
             .map(|(key, value)| {
                 if value.enter_command.is_empty() && value.exit_command.is_empty() {
@@ -99,5 +105,13 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
             .collect::<Result<Vec<_>>>()
             .map_err(|error| -> Error { error.into() })
             .with_context(|| format!("could not parse {}", path.display()))
-    })?
+    })?;
+    match items {
+        Ok(mut items) => {
+            items.sort_by_key(|value| value.priority);
+            items.reverse();
+            Ok(items)
+        }
+        Err(e) => Err(e),
+    }
 }
