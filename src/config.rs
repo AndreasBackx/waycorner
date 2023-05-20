@@ -39,12 +39,12 @@ fn from_hex<'de, D>(deserializer: D) -> Result<u32, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let value: &str = Deserialize::deserialize(deserializer)?;
+    let value: String = Deserialize::deserialize(deserializer)?;
     let re: Regex = Regex::new(r"^#[0-9a-fA-F]{6,8}$").unwrap();
 
-    if !re.is_match(value) {
+    if !re.is_match(&value) {
         return Err(de::Error::invalid_value(
-            Unexpected::Str(value),
+            Unexpected::Str(&value),
             &"a valid hex code",
         ));
     }
