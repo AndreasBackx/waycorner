@@ -21,6 +21,7 @@ pub enum CornerEvent {
     Leave,
 }
 
+#[allow(clippy::type_complexity)]
 #[derive(Debug)]
 pub struct Corner {
     pub config: CornerConfig,
@@ -40,8 +41,7 @@ impl Corner {
     }
 
     pub fn wait(&self) -> Result<()> {
-        let timeout =
-            Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
+        let timeout = Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
         let mut last_event = None;
         let mut command_done_at = None;
         loop {
@@ -61,9 +61,7 @@ impl Corner {
                     }) {
                         last_event = Some(event);
                     } else {
-                        debug!(
-                            "Ignored the event due to too fast after unlock."
-                        );
+                        debug!("Ignored the event due to too fast after unlock.");
                     }
                 }
                 Err(_error) => {
@@ -110,7 +108,7 @@ impl Corner {
             .unwrap_or(true)
     }
 
-    fn execute_command(&self, command: &Vec<String>) -> Result<()> {
+    fn execute_command(&self, command: &[String]) -> Result<()> {
         if let Some(binary) = command.first() {
             let args = command
                 .iter()

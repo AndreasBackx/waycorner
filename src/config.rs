@@ -1,6 +1,6 @@
 use std::{collections::HashMap, env, fs::File, io::Read, path::PathBuf};
 
-use anyhow::{bail, Context, Error, Result};
+use anyhow::{bail, Context, Result};
 use regex::Regex;
 use serde::{
     de::{self, Unexpected},
@@ -48,7 +48,7 @@ where
             &"a valid hex code",
         ));
     }
-    let without_prefix = value.trim_start_matches("#");
+    let without_prefix = value.trim_start_matches('#');
     u32::from_str_radix(without_prefix, 16)
         .map(|val| {
             if val <= 0xFF_FF_FF {
@@ -103,16 +103,10 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
     let path = if config_path.starts_with("~/") {
         debug!("Replacing ~/ with $HOME/");
         let home_path = env::var_os("HOME")
-            .expect("could not find the $HOME env var to use for the default config path");
+            .context("could not find the $HOME env var to use for the default config path")?;
         let relative_path = config_path
             .to_str()
-            .expect(
-                format!(
-                    "invalid config path specified: {}",
-                    config_path.display()
-                )
-                .as_str(),
-            )
+            .unwrap_or_else(|| panic!("invalid config path specified: {}", config_path.display()))
             .to_string()
             .split_off(2);
         PathBuf::from(home_path).join(relative_path)
@@ -120,9 +114,8 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
         config_path
     };
     info!("Using config: {}", path.display());
-    let mut config_file = File::open(path.clone()).with_context(|| {
-        format!("could not open the file {}", path.display())
-    })?;
+    let mut config_file = File::open(path.clone())
+        .with_context(|| format!("could not open the file {}", path.display()))?;
     let mut config_content = String::new();
     config_file.read_to_string(&mut config_content)?;
     toml::from_str::<Config>(config_content.as_str()).map(|item| {
@@ -137,7 +130,6 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
                 Ok(value)
             })
             .collect::<Result<Vec<_>>>()
-            .map_err(|error| -> Error { error.into() })
             .with_context(|| format!("could not parse {}", path.display()))
     })?
 }
