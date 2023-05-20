@@ -2,7 +2,7 @@
 authors = ["Andreas Backx"]
 categories = ["command-line-utilities"]
 description = "Hot corners for Wayland. Create anchors in the corners of your monitors and execute a command of your choice."
-edition = "2018"
+edition = "2021"
 homepage = "https://github.com/AndreasBackx/waycorner"
 keywords = ["wayland", "hot-corners", "swaywm", "wlroots"]
 license = "MIT"
