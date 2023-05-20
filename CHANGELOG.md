@@ -5,17 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Changed
-- Added support for changing the preview color.
-- Added support for edges.
+
+## [0.2.0] - 2023-05-20
+### Added
+- Support for changing the preview color.
+- Support for edges.
 
 ### Changed
-- Update Wayland dependencies to fix coredump.
+- Updated Wayland dependencies to fix coredump.
 - Updated compatible dependencies.
 
 ## [0.1.4] - 2021-08-30
-### Changed
-- Added a minimum timeout of 5ms to prevent an infinite loop as it would continuously check for updates.
+### Added
+- Minimum timeout of 5ms to prevent an infinite loop as it would continuously check for updates.
 
 ## [0.1.3] - 2021-05-29
 ### Changed
