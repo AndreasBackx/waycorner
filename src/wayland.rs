@@ -1,5 +1,5 @@
 use crate::{
-    config::{CornerConfig, Location},
+    config::{self, CornerConfig, Location},
     corner::Corner,
 };
 use anyhow::{Context, Result};
@@ -22,8 +22,6 @@ use std::{
         Arc, Mutex,
     },
 };
-
-use regex::Regex;
 
 use wayland_client::{
     protocol::{wl_output::WlOutput, wl_pointer, wl_surface::WlSurface},
@@ -54,40 +52,8 @@ pub struct Wayland {
     corner_to_surfaces: Vec<(Corner, Vec<WlSurface>)>,
 }
 
-#[non_exhaustive]
-struct Color;
-
-impl Color {
-    pub const TRANSPARENT: u32 = 0x00_00_00_00;
-    pub const RED: u32 = 0xD0_FF_00_00;
-    pub const GREEN: u32 = 0xD0_00_FF_00;
-    pub const BLUE: u32 = 0xD0_00_00_FF;
-
-    pub fn get(preview_color: &str) -> u32 {
-        match preview_color {
-            "red" => Color::RED,
-            "green" => Color::GREEN,
-            "blue" => Color::BLUE,
-            _ => Color::from_hexcode(preview_color),
-        }
-    }
-
-    pub fn from_hexcode(hexcode: &str) -> u32 {
-        let re: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
-
-        if ! re.is_match(hexcode) {
-            panic!("Hexcode is not valid.");
-        }
-        let without_prefix = hexcode.trim_start_matches("#");
-        0xD0_00_00_00 + u32::from_str_radix(without_prefix, 16).unwrap()
-    }
-}
-
 impl Wayland {
-    pub fn new(
-        configs: Vec<CornerConfig>,
-        preview: bool,
-    ) -> Self {
+    pub fn new(configs: Vec<CornerConfig>, preview: bool) -> Self {
         Wayland {
             preview,
             corner_to_surfaces: configs
@@ -102,29 +68,34 @@ impl Wayland {
         let mut event_queue = display.create_event_queue();
         let wl_display = Proxy::clone(&display).attach(event_queue.token());
 
-        let (sctk_outputs, sctk_xdg_out) = XdgOutputHandler::new_output_handlers();
+        let (sctk_outputs, sctk_xdg_out) =
+            XdgOutputHandler::new_output_handlers();
 
         let mut seat_handler = smithay_client_toolkit::seat::SeatHandler::new();
-        let sctk_data_device_manager = DataDeviceHandler::init(&mut seat_handler);
-        let sctk_primary_selection_manager = PrimarySelectionHandler::init(&mut seat_handler);
+        let sctk_data_device_manager =
+            DataDeviceHandler::init(&mut seat_handler);
+        let sctk_primary_selection_manager =
+            PrimarySelectionHandler::init(&mut seat_handler);
 
-        let environment = smithay_client_toolkit::environment::Environment::new(
-            &wl_display,
-            &mut event_queue,
-            Waycorner {
-                sctk_compositor: SimpleGlobal::new(),
-                sctk_shm: smithay_client_toolkit::shm::ShmHandler::new(),
-                sctk_seats: seat_handler,
-                sctk_outputs,
-                sctk_xdg_out,
-                sctk_subcompositor: SimpleGlobal::new(),
-                sctk_data_device_manager,
-                sctk_primary_selection_manager,
-                layer_shell: SimpleGlobal::new(),
-            },
-        )?;
+        let environment =
+            smithay_client_toolkit::environment::Environment::new(
+                &wl_display,
+                &mut event_queue,
+                Waycorner {
+                    sctk_compositor: SimpleGlobal::new(),
+                    sctk_shm: smithay_client_toolkit::shm::ShmHandler::new(),
+                    sctk_seats: seat_handler,
+                    sctk_outputs,
+                    sctk_xdg_out,
+                    sctk_subcompositor: SimpleGlobal::new(),
+                    sctk_data_device_manager,
+                    sctk_primary_selection_manager,
+                    layer_shell: SimpleGlobal::new(),
+                },
+            )?;
 
-        let layer_shell = environment.require_global::<zwlr_layer_shell_v1::ZwlrLayerShellV1>();
+        let layer_shell = environment
+            .require_global::<zwlr_layer_shell_v1::ZwlrLayerShellV1>();
         let env_handle = environment.clone();
 
         for output in environment.get_all_outputs() {
@@ -133,7 +104,8 @@ impl Wayland {
             }
         }
 
-        let (tx, rx): (Sender<wl_pointer::Event>, Receiver<wl_pointer::Event>) = mpsc::channel();
+        let (tx, rx): (Sender<wl_pointer::Event>, Receiver<wl_pointer::Event>) =
+            mpsc::channel();
 
         for seat in environment.get_all_seats() {
             let filter_tx = tx.clone();
@@ -201,7 +173,9 @@ impl Wayland {
     fn get_corner(&self, surface: &WlSurface) -> Option<&Corner> {
         self.corner_to_surfaces
             .iter()
-            .filter(|(_, surfaces)| surfaces.iter().any(|value| value == surface))
+            .filter(|(_, surfaces)| {
+                surfaces.iter().any(|value| value == surface)
+            })
             .map(|(corner, _)| corner)
             .next()
     }
@@ -239,7 +213,7 @@ impl Wayland {
                     &output,
                     corner.config.clone(),
                     preview,
-                    Color::get(corner.config.color.as_str()),
+                    corner.config.color,
                 )?;
 
                 surfaces.append(&mut corner_surfaces);
@@ -264,11 +238,13 @@ impl Wayland {
         corner_config
             .locations
             .iter()
-            .map(|location| match location {
-                Location::TopLeft => Anchor::Top | Anchor::Left,
-                Location::TopRight => Anchor::Top | Anchor::Right,
-                Location::BottomRight => Anchor::Bottom | Anchor::Right,
-                Location::BottomLeft => Anchor::Bottom | Anchor::Left,
+            .map(|location| {
+                match location {
+                    Location::TopLeft => Anchor::Top | Anchor::Left,
+                    Location::TopRight => Anchor::Top | Anchor::Right,
+                    Location::BottomRight => Anchor::Bottom | Anchor::Right,
+                    Location::BottomLeft => Anchor::Bottom | Anchor::Left,
+                }
             })
             .map(|anchor| {
                 info!("Adding anchorpoint {:?}", anchor);
@@ -312,50 +288,52 @@ impl Wayland {
 
         let surface_handle = surface.clone();
 
-        layer_surface.quick_assign(move |layer_surface, event, _| match event {
-            zwlr_layer_surface_v1::Event::Configure {
-                serial,
-                width,
-                height,
-            } => {
-                layer_surface.ack_configure(serial);
-                if let Some(pool) = double_pool.pool() {
-                    let pxcount = width * height;
-                    let bytecount = 4 * pxcount;
+        layer_surface.quick_assign(move |layer_surface, event, _| {
+            match event {
+                zwlr_layer_surface_v1::Event::Configure {
+                    serial,
+                    width,
+                    height,
+                } => {
+                    layer_surface.ack_configure(serial);
+                    if let Some(pool) = double_pool.pool() {
+                        let pxcount = width * height;
+                        let bytecount = 4 * pxcount;
 
-                    pool.resize(bytecount.try_into().unwrap()).unwrap();
-                    pool.seek(SeekFrom::Start(0)).unwrap();
-                    {
-                        let mut writer = BufWriter::new(&mut *pool);
-                        let color = if preview {
-                            preview_color
-                        } else {
-                            Color::TRANSPARENT
-                        };
-                        for _ in 0..pxcount {
-                            writer.write_all(&color.to_ne_bytes()).unwrap();
+                        pool.resize(bytecount.try_into().unwrap()).unwrap();
+                        pool.seek(SeekFrom::Start(0)).unwrap();
+                        {
+                            let mut writer = BufWriter::new(&mut *pool);
+                            let color = if preview {
+                                preview_color
+                            } else {
+                                config::COLOR_TRANSPARENT
+                            };
+                            for _ in 0..pxcount {
+                                writer.write_all(&color.to_ne_bytes()).unwrap();
+                            }
+                            writer.flush().unwrap();
                         }
-                        writer.flush().unwrap();
-                    }
 
-                    let buffer = pool.buffer(
-                        0,
-                        width.try_into().unwrap(),
-                        height.try_into().unwrap(),
-                        (4 * height).try_into().unwrap(),
-                        Format::Argb8888,
-                    );
-                    surface_handle.attach(Some(&buffer), 0, 0);
-                    surface_handle.damage_buffer(
-                        0,
-                        0,
-                        width.try_into().unwrap(),
-                        height.try_into().unwrap(),
-                    );
-                    surface_handle.commit();
+                        let buffer = pool.buffer(
+                            0,
+                            width.try_into().unwrap(),
+                            height.try_into().unwrap(),
+                            (4 * height).try_into().unwrap(),
+                            Format::Argb8888,
+                        );
+                        surface_handle.attach(Some(&buffer), 0, 0);
+                        surface_handle.damage_buffer(
+                            0,
+                            0,
+                            width.try_into().unwrap(),
+                            height.try_into().unwrap(),
+                        );
+                        surface_handle.commit();
+                    }
                 }
+                _ => {}
             }
-            _ => {}
         });
 
         surface.commit();
