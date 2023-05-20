@@ -14,7 +14,7 @@ use wayland::Wayland;
 /// Hot corners for Wayland.
 /// Waycorner allows you to create anchors on specified locations of your monitors and execute a command of your choice.
 #[derive(Parser)]
-#[clap(version = "0.1.4", author = "Andreas Backx", setting = AppSettings::ColoredHelp)]
+#[clap(version = env!("CARGO_PKG_VERSION"), author = "Andreas Backx", setting = AppSettings::ColoredHelp)]
 struct Opts {
     /// Config file path.
     #[clap(
