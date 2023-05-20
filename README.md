@@ -55,6 +55,10 @@ size = 10  # default
 # Timeout in milliseconds before command is triggered.
 timeout_ms = 250  # default
 
+# Hex color of the corner when previewed, supports transparency. (#AARRGGBB or #RRGGBB)
+# (Useful for debuging purposes when setting up several hot corners.)
+color = #FFFF0000  # default
+
 # Optional output config to specify what output to use.
 [left.output]
 # Regex to match output descriptions on.
