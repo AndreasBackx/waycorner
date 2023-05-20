@@ -46,11 +46,19 @@ enter_command = [ "notify-send", "enter" ]
 exit_command = [ "notify-send", "exit" ]
 
 # Locations of the hot corners.
-# Options: top_left, top_right, bottom_right, and bottom_left.
+# Options:
+# - for corners: top_left, top_right, bottom_right, and bottom_left;
+# - for edges: top, bottom, right, left.
 locations = ["bottom_right", "bottom_left"]  # default
 
-# Size of the hot corners in pixels.
+# Size of the hot corners in pixels, for edges the size means the width
+# for vertical edges, and height for horizontal edges. The other dimension
+# will be the width/height of your display - the set margin.
 size = 10  # default
+
+# Margin on the sides of the hot edges, only applicable to edge locations.
+# See the comment with sizes attribute above.
+margin = 20  # default
 
 # Timeout in milliseconds before command is triggered.
 timeout_ms = 250  # default
