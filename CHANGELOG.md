@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Added support for changing the preview color.
+- Added support for edges.
 
 ### Changed
 - Update Wayland dependencies to fix coredump.
