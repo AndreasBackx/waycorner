@@ -3,7 +3,7 @@ mod corner;
 mod wayland;
 
 use anyhow::Result;
-use clap::{AppSettings, Parser};
+use clap::Parser;
 use config::get_configs;
 use std::path::PathBuf;
 use wayland::Wayland;
@@ -11,15 +11,10 @@ use wayland::Wayland;
 /// Hot corners for Wayland.
 /// Waycorner allows you to create anchors on specified locations of your monitors and execute a command of your choice.
 #[derive(Parser)]
-#[clap(version = env!("CARGO_PKG_VERSION"), author = "Andreas Backx", setting = AppSettings::ColoredHelp)]
+#[clap(version = env!("CARGO_PKG_VERSION"), author = "Andreas Backx")]
 struct Opts {
     /// Config file path.
-    #[clap(
-        short,
-        long,
-        parse(from_os_str),
-        default_value = "~/.config/waycorner/config.toml"
-    )]
+    #[clap(short, long, default_value = "~/.config/waycorner/config.toml")]
     config: PathBuf,
     /// Preview the corners on your screen(s).
     #[clap(short, long)]

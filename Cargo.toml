@@ -11,7 +11,7 @@ version = "0.2.0"
 
 [dependencies]
 anyhow = "1.0"
-clap = {version = "3.2.25", features = ["derive"]}
+clap = {version = "4.3.0", features = ["derive"]}
 crossbeam-utils = "0.8.15"
 regex = "1.8"
 serde = {version = "1.0.163", features = ["derive"]}
