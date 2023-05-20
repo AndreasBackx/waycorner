@@ -13,11 +13,11 @@ version = "0.2.0"
 anyhow = "1.0"
 clap = {version = "3.2.25", features = ["derive"]}
 crossbeam-utils = "0.8.15"
-env_logger = "0.10.0"
-log = "0.4.17"
 regex = "1.8"
 serde = {version = "1.0.163", features = ["derive"]}
 smithay-client-toolkit = "0.16.0"
 toml = "0.5.11"
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
 wayland-client = "0.29.5"
 wayland-protocols = "0.29.5"

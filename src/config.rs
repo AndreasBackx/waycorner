@@ -6,6 +6,7 @@ use serde::{
     de::{self, Unexpected},
     Deserialize, Deserializer,
 };
+use tracing::{debug, info};
 
 pub const COLOR_TRANSPARENT: u32 = 0x00_00_00_00;
 pub const COLOR_RED: u32 = 0xFF_FF_00_00;

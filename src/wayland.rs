@@ -22,6 +22,7 @@ use std::{
         Arc, Mutex,
     },
 };
+use tracing::{debug, info};
 
 use wayland_client::{
     protocol::{wl_output::WlOutput, wl_pointer, wl_surface::WlSurface},

@@ -2,9 +2,6 @@ mod config;
 mod corner;
 mod wayland;
 
-#[macro_use]
-extern crate log;
-
 use anyhow::Result;
 use clap::{AppSettings, Parser};
 use config::get_configs;
@@ -30,7 +27,7 @@ struct Opts {
 }
 
 fn main() -> Result<()> {
-    env_logger::init();
+    tracing_subscriber::fmt::init();
 
     let opts = Opts::parse();
 

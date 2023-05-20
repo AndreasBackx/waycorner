@@ -11,6 +11,7 @@ use std::{
 
 use anyhow::Result;
 use regex::Regex;
+use tracing::{debug, info};
 
 use crate::config::CornerConfig;
 
@@ -39,7 +40,8 @@ impl Corner {
     }
 
     pub fn wait(&self) -> Result<()> {
-        let timeout = Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
+        let timeout =
+            Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
         let mut last_event = None;
         let mut command_done_at = None;
         loop {
@@ -59,7 +61,9 @@ impl Corner {
                     }) {
                         last_event = Some(event);
                     } else {
-                        debug!("Ignored the event due to too fast after unlock.");
+                        debug!(
+                            "Ignored the event due to too fast after unlock."
+                        );
                     }
                 }
                 Err(_error) => {
