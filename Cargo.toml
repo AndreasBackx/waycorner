@@ -15,7 +15,7 @@ clap = {version = "4.3.0", features = ["derive"]}
 crossbeam-utils = "0.8.15"
 regex = "1.8"
 serde = {version = "1.0.163", features = ["derive"]}
-smithay-client-toolkit = "0.16.0"
+smithay-client-toolkit = "0.16.1"
 toml = "0.7.4"
 tracing = "0.1.37"
 tracing-subscriber = "0.3.17"
