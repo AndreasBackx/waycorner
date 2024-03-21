@@ -7,7 +7,7 @@ homepage = "https://github.com/AndreasBackx/waycorner"
 keywords = ["wayland", "hot-corners", "swaywm", "wlroots"]
 license = "MIT"
 name = "waycorner"
-version = "0.2.2"
+version = "0.2.3"
 
 [dependencies]
 anyhow = "1.0"
