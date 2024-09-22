@@ -16,6 +16,34 @@ If you would like waycorner to be available on your distro's package manager, fe
 paru -S waycorner
 ```
 
+
+### Nix/NixOS
+
+There are several methods to install waycorner using Nix. Waycorner already exists in Nixpkgs, so it is a matter of preference or
+available tooling. You may pick whichever option suites your use case.
+
+#### Nix (Standalone)
+
+```bash
+nix profile install nixpkgs#waycorner
+```
+
+#### NixOS
+
+```nix
+{pkgs, ...}: {
+    environment.systemPackages = [pkgs.waycorner];
+}
+```
+
+#### Home-Manager
+
+```nix
+{pkgs, ...}: {
+    home.packages = [pkgs.waycorner];
+}
+```
+
 ### Cargo (crates.io)
 
 ```zsh
