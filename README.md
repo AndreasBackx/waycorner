@@ -24,18 +24,16 @@ cargo install waycorner --locked
 
 ### Nix/NixOS
 
-[`waycorner` package]: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/applications/misc/waycorner/default.nix
-[search.nixos.org]: https://search.nixos.org/packages?channel=unstable&show=waycorner&from=0&size=50&sort=relevance&type=packages&query=waycorner
+[`waycorner`]: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/applications/misc/waycorner/default.nix
+[See installation instructions.]: https://search.nixos.org/packages?channel=unstable&show=waycorner&from=0&size=50&sort=relevance&type=packages&query=waycorner
 [@NotAShelf]: https://github.com/notashelf
 [out-of-date package report]: https://github.com/NixOS/nixpkgs/issues/new?assignees=&labels=9.needs%3A+package+%28update%29&projects=&template=out_of_date_package_report.md&title=Update+request%3A+PACKAGENAME+OLDVERSION+%E2%86%92+NEWVERSION
 
-There is a [waycorner package] package available via Nixpkgs. Refer to [search.nixos.org] page for Waycorner
-for the appropriate installation methods.
+The [`waycorner`] package is available via Nixpkgs. [See installation instructions.]
 
 > [!NOTE]
-> The Waycorner package in Nixpkgs is not updated automatically by the project author, and is instead
-> maintained by [@NotAShelf]. Please contact the maintainer or open an [out-of-date package report] in
-> Nixpkgs.
+> The Waycorner package in Nixpkgs is not updated automatically by the project, and is instead
+> maintained by [@NotAShelf]. Please contact [@NotAShelf] or create an [out-of-date package report] on https://github.com/NixOS/nixpkgs in case the version is out-of-date.
 
 ### Manually
 
