@@ -22,6 +22,20 @@ paru -S waycorner
 cargo install waycorner --locked
 ```
 
+### Nix/NixOS
+
+[`waycorner`]: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/applications/misc/waycorner/default.nix
+[See installation instructions.]: https://search.nixos.org/packages?channel=unstable&show=waycorner&from=0&size=50&sort=relevance&type=packages&query=waycorner
+[@NotAShelf]: https://github.com/notashelf
+[create an out-of-date package report]: https://github.com/NixOS/nixpkgs/issues/new?assignees=&labels=9.needs%3A+package+%28update%29&projects=&template=out_of_date_package_report.md&title=Update+request%3A+PACKAGENAME+OLDVERSION+%E2%86%92+NEWVERSION
+[NixOS/nixpkgs]: https://github.com/NixOS/nixpkgs
+
+The [`waycorner`] package is available via Nixpkgs. [See installation instructions.]
+
+> [!NOTE]
+> The Waycorner package in Nixpkgs is not updated automatically by the project, and is instead
+> maintained by [@NotAShelf]. Please contact [@NotAShelf] or [create an out-of-date package report] on [NixOS/nixpkgs] in case the version is out-of-date.
+
 ### Manually
 
 ```zsh
@@ -64,8 +78,8 @@ margin = 20  # default
 timeout_ms = 250  # default
 
 # Hex color of the corner when previewed, supports transparency. (#AARRGGBB or #RRGGBB)
-# (Useful for debuging purposes when setting up several hot corners.)
-color = #FFFF0000  # default
+# (Useful for debugging purposes when setting up several hot corners.)
+color = "#FFFF0000"  # default
 
 # Optional output config to specify what output to use.
 [left.output]
