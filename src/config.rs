@@ -27,6 +27,10 @@ fn default_timeout_ms() -> u16 {
     250
 }
 
+fn default_flick_activation_speed() -> f64 {
+    3.0
+}
+
 fn default_color() -> u32 {
     COLOR_RED
 }
@@ -67,6 +71,8 @@ pub struct CornerConfig {
     pub enter_command: Vec<String>,
     #[serde(default = "default_command")]
     pub exit_command: Vec<String>,
+    #[serde(default = "default_command")]
+    pub flick_command: Vec<String>,
     #[serde(default = "default_locations")]
     pub locations: Vec<Location>,
     #[serde(default = "default_size")]
@@ -75,6 +81,8 @@ pub struct CornerConfig {
     pub margin: i8,
     #[serde(default = "default_timeout_ms")]
     pub timeout_ms: u16,
+    #[serde(default = "default_flick_activation_speed")]
+    pub flick_activation_speed: f64,
     #[serde(default = "default_color", deserialize_with = "from_hex")]
     pub color: u32,
 }
@@ -121,9 +129,9 @@ pub fn get_configs(config_path: PathBuf) -> Result<Vec<CornerConfig>> {
     toml::from_str::<Config>(config_content.as_str()).map(|item| {
         item.into_iter()
             .map(|(key, value)| {
-                if value.enter_command.is_empty() && value.exit_command.is_empty() {
+                if value.enter_command.is_empty() && value.exit_command.is_empty() && value.flick_command.is_empty() {
                     bail!(
-                        "You must provide either an `exit_command` or an `enter_command` for `{}`",
+                        "You must provide one of `exit_command`, `enter_command`, `flick_command` for `{}`",
                         key
                     )
                 }

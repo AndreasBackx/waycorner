@@ -1,6 +1,6 @@
 use crate::{
     config::{self, CornerConfig, Location},
-    corner::Corner,
+    corner::{Corner, CornerEvent, CornerMotionEvent},
 };
 use anyhow::{Context, Result};
 
@@ -21,6 +21,7 @@ use std::{
         mpsc::{self, Receiver, Sender},
         Arc, Mutex,
     },
+    time::Instant,
 };
 use tracing::{debug, info};
 
@@ -121,21 +122,43 @@ impl Wayland {
 
         let pointer_event_receiver = Arc::new(Mutex::new(rx));
         thread::scope(|scope| -> Result<()> {
-            scope.spawn(|_| loop {
-                let event = pointer_event_receiver
-                    .lock()
-                    .expect("Could not lock event receiver")
-                    .recv();
-                match event {
-                    Ok(wl_pointer::Event::Enter { surface, .. }) => {
-                        self.get_corner(&surface)
-                            .and_then(|corner| corner.on_enter_mouse().ok());
+            scope.spawn(|_| {
+                let mut hovered_surface = None;
+                loop {
+                    let event = pointer_event_receiver
+                        .lock()
+                        .expect("Could not lock event receiver")
+                        .recv();
+                    match event {
+                        Ok(wl_pointer::Event::Enter { surface, .. }) => {
+                            hovered_surface = Some(surface.clone());
+                            self.get_corner(&surface)
+                                .and_then(|corner| corner.send_event(CornerEvent::Enter).ok());
+                        }
+                        Ok(wl_pointer::Event::Leave { surface, .. }) => {
+                            hovered_surface = None;
+                            self.get_corner(&surface)
+                                .and_then(|corner| corner.send_event(CornerEvent::Leave).ok());
+                        }
+                        Ok(wl_pointer::Event::Motion {
+                            time: _time,
+                            surface_x,
+                            surface_y,
+                        }) => {
+                            if let Some(ref hovered_surface) = hovered_surface {
+                                let event = CornerEvent::Motion {
+                                    0: CornerMotionEvent {
+                                        time: Instant::now(),
+                                        surface_x,
+                                        surface_y,
+                                    },
+                                };
+                                self.get_corner(&hovered_surface)
+                                    .and_then(|corner| corner.send_event(event).ok());
+                            }
+                        }
+                        _ => (),
                     }
-                    Ok(wl_pointer::Event::Leave { surface, .. }) => {
-                        self.get_corner(&surface)
-                            .and_then(|corner| corner.on_leave_mouse().ok());
-                    }
-                    _ => (),
                 }
             });
 
