@@ -1,6 +1,5 @@
 use std::{
     borrow::Borrow,
-    cmp,
     process::Command,
     sync::{
         mpsc::{channel, Receiver, Sender},
@@ -13,7 +12,7 @@ use anyhow::Result;
 use regex::Regex;
 use tracing::{debug, info};
 
-use crate::config::CornerConfig;
+use crate::config::{CornerConfig, MIN_TIMEOUT_MS};
 
 #[derive(Debug, PartialEq)]
 pub enum CornerEvent {
@@ -41,41 +40,10 @@ impl Corner {
     }
 
     pub fn wait(&self) -> Result<()> {
-        let timeout = Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
-        let mut last_event = None;
-        let mut command_done_at = None;
-        loop {
-            let event_result = self
-                .channel
-                .1
-                .lock()
-                .expect("cannot get corner receiver")
-                .recv_timeout(timeout);
-            match event_result {
-                Ok(event) => {
-                    debug!("Received event: {:?}", event);
-                    if command_done_at.map_or(true, |value| {
-                        Instant::now()
-                            .duration_since(value)
-                            .ge(&Duration::from_millis(250))
-                    }) {
-                        last_event = Some(event);
-                    } else {
-                        debug!("Ignored the event due to too fast after unlock.");
-                    }
-                }
-                Err(_error) => {
-                    if let Some(event) = last_event {
-                        if event == CornerEvent::Enter {
-                            self.execute_command(&self.config.enter_command)?;
-                        } else if event == CornerEvent::Leave {
-                            self.execute_command(&self.config.exit_command)?;
-                        }
-                        command_done_at = Some(Instant::now());
-                    }
-                    last_event = None;
-                }
-            }
+        if self.config.timeout_ms != 0 {
+            self.loop_with_timeout()
+        } else {
+            self.loop_without_timeout()
         }
     }
 
@@ -122,5 +90,60 @@ impl Corner {
         }
 
         Ok(())
+    }
+
+    fn execute_event(self: &Self, event: &CornerEvent) -> Result<()> {
+        match event {
+            CornerEvent::Enter => self.execute_command(&self.config.enter_command),
+            CornerEvent::Leave => self.execute_command(&self.config.exit_command),
+        }
+    }
+
+    fn loop_with_timeout(self: &Self) -> Result<()> {
+        let timeout = Duration::from_millis(self.config.timeout_ms.max(MIN_TIMEOUT_MS).into());
+        let mut last_event = None;
+        let mut command_done_at = None;
+        loop {
+            let event_result = self
+                .channel
+                .1
+                .lock()
+                .expect("cannot get corner receiver")
+                .recv_timeout(timeout);
+            match event_result {
+                Ok(event) => {
+                    debug!("Received event: {:?}", event);
+                    if command_done_at.map_or(true, |value| {
+                        Instant::now()
+                            .duration_since(value)
+                            .ge(&Duration::from_millis(250))
+                    }) {
+                        last_event = Some(event);
+                    } else {
+                        debug!("Ignored the event due to too fast after unlock.");
+                    }
+                }
+                Err(_error) => {
+                    if let Some(event) = last_event {
+                        self.execute_event(&event)?;
+                        command_done_at = Some(Instant::now());
+                    }
+                    last_event = None;
+                }
+            }
+        }
+    }
+
+    fn loop_without_timeout(&self) -> Result<()> {
+        while let Ok(event) = self
+            .channel
+            .1
+            .lock()
+            .expect("cannot get corner receiver")
+            .recv()
+        {
+            self.execute_event(&event)?;
+        }
+        Ok(()) // channel disconnected
     }
 }
