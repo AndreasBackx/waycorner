@@ -1,6 +1,5 @@
 use std::{
     borrow::Borrow,
-    cmp,
     process::Command,
     sync::{
         mpsc::{channel, Receiver, Sender},
@@ -13,7 +12,7 @@ use anyhow::Result;
 use regex::Regex;
 use tracing::{debug, info};
 
-use crate::config::CornerConfig;
+use crate::config::{CornerConfig, MIN_TIMEOUT_MS};
 
 #[derive(Debug, PartialEq)]
 pub enum CornerEvent {
@@ -101,7 +100,7 @@ impl Corner {
     }
 
     fn loop_with_timeout(self: &Self) -> Result<()> {
-        let timeout = Duration::from_millis(cmp::max(self.config.timeout_ms.into(), 5));
+        let timeout = Duration::from_millis(self.config.timeout_ms.max(MIN_TIMEOUT_MS).into());
         let mut last_event = None;
         let mut command_done_at = None;
         loop {
