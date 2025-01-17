@@ -49,7 +49,7 @@ cargo install --path . --locked
 Default configuration location is `~/.config/waycorner/config.toml`, this needs to be created manually. You can also specify a different location using `--config`. Preview your configuration with the `--preview` flag.
 
 ```toml
-[left]
+[eDP-1]
 # Shell commands to execute when hotcorner is triggered,
 # at least one is required.
 
@@ -82,13 +82,23 @@ timeout_ms = 250  # default
 color = "#FFFF0000"  # default
 
 # Optional output config to specify what output to use.
-[left.output]
+[eDP-1.output]
 # Regex to match output descriptions on.
 # Regex engine is similar to RE2: https://github.com/rust-lang/regex
 #
 # Use `swaymsg -t get_outputs` to get a list of outputs in the format:
 # Output ${NAME} '${DESCRIPTION}'
-description = ""  # default, empty means all outputs
+description = "eDP-1"  # default, empty means all outputs
+
+[HDMI-1]
+enter_command = [ "xfce4-appfinder" ]
+locations = ["right"]
+
+[HDMI-1.output]
+description = "HDMI-1"
+
+[more]
+...
 ```
 
 Then add `exec waycorner` to your swaywm config.
