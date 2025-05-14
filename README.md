@@ -82,7 +82,7 @@ timeout_ms = 250  # default
 color = "#FFFF0000"  # default
 
 # Optional output config to specify what output to use.
-[eDP-1.output]
+[main-monitor.output]
 # Regex to match output descriptions on.
 # Regex engine is similar to RE2: https://github.com/rust-lang/regex
 #
@@ -98,7 +98,7 @@ description = "U3219Q F2XWXV2"  # default, empty means all outputs
 enter_command = [ "notify-send", "left" ]
 locations = ["right"]
 
-[HDMI-1.output]
+[side-monitor.output]
 description = "U2515H 9X2VY6A80A8L"
 
 ```
