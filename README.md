@@ -49,7 +49,7 @@ cargo install --path . --locked
 Default configuration location is `~/.config/waycorner/config.toml`, this needs to be created manually. You can also specify a different location using `--config`. Preview your configuration with the `--preview` flag.
 
 ```toml
-[eDP-1]
+[main-monitor]
 # Shell commands to execute when hotcorner is triggered,
 # at least one is required.
 
@@ -88,17 +88,19 @@ color = "#FFFF0000"  # default
 #
 # Use `swaymsg -t get_outputs` to get a list of outputs in the format:
 # Output ${NAME} '${DESCRIPTION}'
-description = "eDP-1"  # default, empty means all outputs
+# Use `swaymsg -t get_outputs` or `hyprctl monitors` to list your outputs.
+# The description of the output is what is matched.
+# This often contains the output name, manufacturer, model, and serial number so
+# any of those could be used for matching.
+description = "U3219Q F2XWXV2"  # default, empty means all outputs
 
-[HDMI-1]
-enter_command = [ "xfce4-appfinder" ]
+[side-monitor]
+enter_command = [ "notify-send", "left" ]
 locations = ["right"]
 
 [HDMI-1.output]
-description = "HDMI-1"
+description = "U2515H 9X2VY6A80A8L"
 
-[more]
-...
 ```
 
 Then add `exec waycorner` to your swaywm config.
